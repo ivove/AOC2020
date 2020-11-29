@@ -1,0 +1,14 @@
+ROUTINE Util
+
+FileReader(Path,File)[] PUBLIC
+{
+	k File
+	s stream  = ##class(%FileCharacterStream).%New()
+	s stream.Filename=Path	
+	While 'stream.AtEnd 
+	{
+		s line = stream.ReadLine()
+		s File=$g(File)+1
+		s File(File)=line
+	} //END While 'stream.AtEnd
+} //END FileReader
