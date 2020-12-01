@@ -1,4 +1,4 @@
-ROUTINE Util
+ROUTINE AOCutils
 
 FileReader(Path,File)[] PUBLIC
 {
@@ -11,4 +11,4 @@ FileReader(Path,File)[] PUBLIC
 		s File=$g(File)+1
 		s File(File)=line
 	} //END While 'stream.AtEnd
-} //END FileReader
+} //END FileReader 
