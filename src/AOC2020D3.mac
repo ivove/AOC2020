@@ -1,0 +1,61 @@
+ROUTINE AOC2020D3
+
+Part1(File)[]PUBLIC
+{
+    s trees=0,x=1
+    d FileReader^AOCutils(File,.map)
+    for y = 2:1:map {
+        s line=map(y)
+        ;w !,line
+        ;w *9,x,*9,y
+        s x=x+3
+        i (x>$l(line)) { s x=x-$l(line) }
+        i $e(line,x)="#" { s trees=trees+1
+        ;w *9,"#" 
+        }
+    }
+    return trees
+}
+
+Part2(File)[]PUBLIC
+{
+    d FileReader^AOCutils(File,.map)
+    s trees1=0,x=1
+    for y = 2:1:map {
+        s line=map(y)
+        s x=x+1
+        i (x>$l(line)) { s x=x-$l(line) }
+        i $e(line,x)="#" { s trees1=trees1+1}
+    }
+    s trees2=0,x=1
+    for y = 2:1:map {
+        s line=map(y)
+        s x=x+3
+        i (x>$l(line)) { s x=x-$l(line) }
+        i $e(line,x)="#" { s trees2=trees2+1}
+    }
+    s trees3=0,x=1
+    for y = 2:1:map {
+        s line=map(y)
+        s x=x+5
+        i (x>$l(line)) { s x=x-$l(line) }
+        i $e(line,x)="#" { s trees3=trees3+1}
+    }
+    
+    s trees4=0,x=1
+    for y = 2:1:map {
+        s line=map(y)
+        s x=x+7
+        i (x>$l(line)) { s x=x-$l(line) }
+        i $e(line,x)="#" { s trees4=trees4+1}
+    }
+    
+    s trees5=0,x=1
+    for y = 3:2:map {
+        s line=map(y)
+        s x=x+1
+        i (x>$l(line)) { s x=x-$l(line) }
+        i $e(line,x)="#" { s trees5=trees5+1}
+    }
+    return trees1*trees2*trees3*trees4*trees5
+}
