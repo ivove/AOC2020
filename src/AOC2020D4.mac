@@ -1,0 +1,95 @@
+ROUTINE AOC2020D4
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.pas)
+    s cnt=0,fields=0
+    d getPassports(.pas,.pasp)
+    zw pasp
+    s p=$order(pasp(""))
+    while p'="" {
+        s valid=1
+        for field ="byr","iyr","eyr","hgt","hcl","ecl","pid" {
+            i '$d(pasp(p,field)) {s valid=0 }
+        }
+        if valid {s cnt=cnt+1}
+        s p=$o(pasp(p))
+    }
+    return cnt
+}
+
+getPassports(Pas,Passort)[]
+{
+    s counter=1
+    for i=1:1:Pas {
+        s line=Pas(i)
+        if (line'=""){
+            s xline=$lfs(line," ")
+            for y = 1:1:$ll(xline) {
+                s kv=$li(xline,y)
+                set Passort(counter,$p(kv,":"))=$p(kv,":",2)
+            }
+        }
+        else {
+            s counter=counter+1
+        }
+
+    }
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.pas)
+    s cnt=0,fields=0
+    d getPassports(.pas,.pasp)
+    s p=$order(pasp(""))
+    while p'="" {
+        s valid=1,xv="none"
+        for field ="byr","iyr","eyr","hgt","hcl","ecl","pid" {
+            i '$d(pasp(p,field)) {s valid=0 }
+        }
+        if valid {
+            if ((pasp(p,"byr") < 1920) || (pasp(p,"byr") > 2002)) { 
+                s valid=0,xv="byr" 
+            }
+            if ((pasp(p,"iyr") < 2010) || (pasp(p,"iyr") > 2020)) { s valid=0,xv="iyr"  }
+            if ((pasp(p,"eyr") < 2020) || (pasp(p,"iyr") > 2030)) { s valid=0,xv="eyr"  }
+            if ((pasp(p,"hgt")'["cm") && (pasp(p,"hgt")'["in")) {
+                s valid=0,xv="hgt" 
+            }
+            if ((pasp(p,"hgt")["cm") && ((pasp(p,"hgt")<150) ||(pasp(p,"hgt")>193))) { 
+                s valid=0,xv="hgt" 
+            }
+            if ((pasp(p,"hgt")["in") && ((pasp(p,"hgt")<59) ||(pasp(p,"hgt")>76))) { 
+                s valid=0,xv="hgt" 
+            }
+            s hcl=pasp(p,"hcl")
+            if (($e(hcl,1)'="#") || ($l(hcl)'=7)) {
+                s valid=0,xv="hcl"
+                ;w !,"hcl",*9,"*",hcl,"*" 
+            }
+            f i=2:1:$l(hcl){
+                s x=$zcvt($e(hcl,i),"l")
+                if '(x?1N) {
+                    if x'="a",x'="b",x'="c",x'="d",x'="e",x'="f" { 
+                        s valid=0,xv="hcl"
+                        ;w !,*9,x
+                    }
+                }
+            }
+            s ecl=pasp(p,"ecl")
+            if ecl'="amb",ecl'="blu",ecl'="brn",ecl'="gry",ecl'="grn",ecl'="hzl",ecl'="oth" { 
+                s valid=0
+            }
+            if '(pasp(p,"pid")?9N) { 
+                s valid = 0,xv="pid"
+            }
+        }
+        ;w !,valid,$g(xv),*9,$g(pasp(p,xv))
+        i valid=1 { s cnt=cnt+1
+        zw pasp(p) }
+        s p=$o(pasp(p))
+    }
+    return cnt
+
+}
