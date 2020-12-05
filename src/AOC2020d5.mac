@@ -1,0 +1,57 @@
+ROUTINE AOC2020D5
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.pas)
+    s maxid=0
+    for i = 1:1:pas {
+        s line=pas(i)
+        s minrow=0,maxrow=127
+        s mincol=0,maxcol=7
+        for c = 1:1:$l(line) {
+            s xx=$e(line,c)
+            if xx="F" { s maxrow=minrow + ($j((maxrow-minrow)/2,0,0)-1) }
+            if xx="B" { s minrow=maxrow-$j((maxrow-minrow)/2,0,0)+1 }
+            if xx="L" { s maxcol=mincol + ($j((maxcol-mincol)/2,0,0)-1) }
+            if xx="R" { s mincol=maxcol - $j((maxcol-mincol)/2,0,0)+1 }
+            w !,xx,*9,minrow," - ",maxrow,*9,mincol," - ",maxcol
+        }
+        set id=(minrow*8)+mincol
+        w !,minrow,*9,mincol,*9,id
+        i id>maxid { s maxid=id }
+    }
+    w !
+    return maxid
+}
+
+Part2(Input)[]PUBLIC
+{
+     d FileReader^AOCutils(Input,.pas)
+     s myid=""
+    for i = 1:1:pas {
+        s line=pas(i)
+        s minrow=0,maxrow=127
+        s mincol=0,maxcol=7
+        for c = 1:1:$l(line) {
+            s xx=$e(line,c)
+            if xx="F" { s maxrow=minrow + ($j((maxrow-minrow)/2,0,0)-1) }
+            if xx="B" { s minrow=maxrow-$j((maxrow-minrow)/2,0,0)+1 }
+            if xx="L" { s maxcol=mincol + ($j((maxcol-mincol)/2,0,0)-1) }
+            if xx="R" { s mincol=maxcol - $j((maxcol-mincol)/2,0,0)+1 }
+        }
+        set id=(minrow*8)+mincol
+        s ids(id)=""
+    }
+    s id=$o(ids(""))
+    s prev=id,id=$o(ids(id))
+    while id'=""{
+        ;w !,prev,*9,id
+        if (id-prev)>1{
+            w !,*9,*9,*9,prev,*9,id
+            s myid=prev+1
+        }
+        s prev=id,id=$o(ids(id))
+    }
+    w !
+    return myid
+}
