@@ -1,0 +1,63 @@
+ROUTINE AOC2020D6
+
+Part1(Input)[]PUBLIC
+{
+    set output=0
+    d FileReader^AOCutils(Input,.answers)
+    for i = 1:1:answers {
+        s line=answers(i)
+        if line="" {
+            s x=$o(let(""))
+            while x'="" {
+                s output=output+1
+                s x=$o(let(x))
+            }
+            k let
+        } else {
+            f y=1:1:$l(line) {
+                s c=$e(line,y)
+                s let(c)=""
+            }
+        }
+    }
+    s x=$o(let(""))
+    while x'="" {
+        s output=output+1
+        s x=$o(let(x))
+    }
+    return output
+}
+
+Part2(Input)[]PUBLIC
+{
+    set output=0,number=0
+    d FileReader^AOCutils(Input,.answers)
+    for i = 1:1:answers {
+        s line=answers(i)
+        if line="" {
+            s x=$o(let(""))
+            while x'="" {
+                if (let(x)=number) {
+                    s output=output+1
+                }
+                s x=$o(let(x))
+            }
+            k let
+            s number=0
+        } else {
+            s number=number+1
+            f y=1:1:$l(line) {
+                s c=$e(line,y)
+                s let(c)=$g(let(c))+1
+            }
+        }
+    }
+    s x=$o(let(""))
+    while x'="" {
+        if (let(x)=number) {
+            s output=output+1
+        }
+        s x=$o(let(x))
+    }
+    return output
+}
