@@ -1,0 +1,94 @@
+ROUTINE AOC2020D7
+
+Part1(Input)[]PUBLIC
+{
+    s number=0
+    d FileReader^AOCutils(Input,.bags)
+    for i = 1:1:bags {
+        s line=bags(i)
+        s type=$e($p(line,"bags"),1,*-1)
+        s contains=$p(line,"contain",2)
+        if (contains'["no other") {
+            for y = 1:1:$l(contains,",") {
+                s p=$p(contains,",",y)
+                s lst=$lfs(p," ")
+                s xtype=$li(lst,3)_" "_$li(lst,4)
+                s rules(type)=$g(rules(type))+1
+                s rules(type,rules(type))=xtype
+            }
+        }
+    }
+    s color=$o(rules(""))
+    s i=1
+    while color'="" {
+        w !,color,*9,$d(rules(color)),!
+        zw rules(color)
+        s xrules(i)=$$buildRuleSet($lb(),color,.rules)
+        s color=$o(rules(color)),i=i+1
+    }
+    ;zw xrules
+    s i=$o(xrules(""))
+    while i'=""{
+        s ok=0
+        for y = 2:1:$ll(xrules(i)) {
+            if $li(xrules(i),y)="shiny gold" { s ok=1 }
+        }
+        i ok {s number=number+1 }
+        s i=$o(xrules(i))
+    }
+    return number
+}
+
+buildRuleSet(line,nextRule,rules) {
+    if ($d(rules(nextRule)))
+    {
+        for i = 1:1:rules(nextRule) {
+            s $li(line,$ll(line)+1)=rules(nextRule,i)
+            s line=$$buildRuleSet(line,rules(nextRule,i),.rules)
+        }
+    }
+    return line
+}
+
+buildRuleSet2(count,nextRule,rules) {
+    if ($d(rules(nextRule)))
+    {
+        s xcount=count
+        for i = 1:1:rules(nextRule) {
+            s mybags= ($li(rules(nextRule,i),2))
+            s multiplier=$li(rules(nextRule,i),2)
+            s children=$$buildRuleSet2(0,$li(rules(nextRule,i),1),.rules)
+
+            s count= mybags + (multiplier * children)
+            w !,nextRule,"->",$li(rules(nextRule,i),1),*9,count,*9,xcount,*9,mybags,*9,multiplier,*9,children
+            s xcount=xcount+count
+        }
+        return xcount
+    }
+    return 0
+}
+
+Part2(Input)[]PUBLIC
+{
+    s number=0
+    d FileReader^AOCutils(Input,.bags)
+    for i = 1:1:bags {
+        s line=bags(i)
+        s type=$e($p(line,"bags"),1,*-1)
+        s contains=$p(line,"contain",2)
+        if (contains'["no other") {
+            for y = 1:1:$l(contains,",") {
+                s p=$p(contains,",",y)
+                s lst=$lfs(p," ")
+                s xtype=$li(lst,3)_" "_$li(lst,4)
+                s cnt=+$li(lst,2)
+                s rules(type)=$g(rules(type))+1
+                s rules(type,rules(type))=$lb(xtype,cnt)
+            }
+        }
+    }
+    zw rules
+    s number=$$buildRuleSet2(0,"shiny gold",.rules)
+    w !
+    return number
+}
