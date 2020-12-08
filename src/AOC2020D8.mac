@@ -1,0 +1,57 @@
+ROUTINE AOC2020D8
+
+Part1(Input)[]PUBLIC
+{
+    s acc=0,pos=1,cont=1
+    d FileReader^AOCutils(Input,.prog)
+    while cont=1 {
+        s line=$lfs(prog(pos)," ")
+        s xx=$li(line,2)
+        w pos,*9,$li(line,1),*9,xx
+        if ($li(line,1)="jmp"){ s pos=pos+xx } 
+        elseif ($li(line,1)="acc"){ s acc=acc+xx,pos=pos+1 }
+        else { s pos=pos+1 }
+        w *9,acc,*9,pos,!
+        i $d(visited(pos)) { s cont=0 }
+        else { s visited(pos)="" }
+    }
+    return acc
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.prog)
+    s i=1,found=0
+    while i<prog,found=0 {
+        m xprog=prog
+        s line=$lfs(prog(i)," ")
+        i $li(line,1)="jmp" {
+            s $p(xprog(i)," ")="nop"
+        }
+        i $li(line,1)="nop" {
+            s $p(xprog(i)," ")="jmp"
+        }
+        s ended=$$Run(.xprog,.acc)
+        i ended { s found=1 }
+        s i=i+1
+    }
+    return acc
+}
+
+Run(prog,acc)[]
+{
+    s acc=0,pos=1,cont=1,ended=0
+    while cont=1 {
+        s line=$lfs(prog(pos)," ")
+        s xx=$li(line,2)
+        ;w pos,*9,$li(line,1),*9,xx
+        if ($li(line,1)="jmp"){ s pos=pos+xx } 
+        elseif ($li(line,1)="acc"){ s acc=acc+xx,pos=pos+1 }
+        else { s pos=pos+1 }
+        ;w *9,acc,*9,pos,!
+        i $d(visited(pos)) { s cont=0 }
+        else { s visited(pos)="" }
+        i '$d(prog(pos)) { s cont=0,ended=1 }
+    }
+    return ended
+}
