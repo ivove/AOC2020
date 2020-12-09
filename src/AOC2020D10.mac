@@ -1,0 +1,11 @@
+ROUTINE AOC2020D10
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.xmas)
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.xmas)
+}

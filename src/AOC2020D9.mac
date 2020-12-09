@@ -1,0 +1,54 @@
+ROUTINE AOC2020D9
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.xmas)
+    s cont=1,i=26,xx=""
+    while i<xmas,cont {
+        if ('$$isValid(i,xmas(i),.xmas)) { s cont=0,xx=xmas(i) }
+        s i=i+1
+    }
+    return xx
+}
+
+isValid(index,number,xmas)
+{
+    s valid=0
+    s start=index-25
+    s end=index-1
+     for i=start:1:end{
+        for y=start:1:end{
+            i y'=i {
+                s sum(xmas(i)+xmas(y))=""
+            }
+        }
+    }
+    if ($d(sum(number))) { s valid=1 }
+    q valid
+}
+
+Part2(Input,number)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.xmas)
+    s i=1,cont=1,found=""
+    while cont,i<xmas {
+        s y=i,sum=0,found=0
+        k serie
+        while found=0,y<xmas,sum<number {
+            s sum=sum+xmas(y)
+            s serie(xmas(y))=""
+            if sum=number { 
+                s cont=0,found=1 
+                w sum,*9,number,!
+            }
+            if sum>number {
+                s found=1
+                w sum,*9,number,!
+            }
+            s y=y+1
+        }
+        s i=i+1
+    }
+    return ($o(serie("")) + $o(serie(""),-1))
+
+}
