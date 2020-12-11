@@ -1,0 +1,159 @@
+ROUTINE AOC2020D11
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.plane)
+    for y = 1:1:plane {
+        s line=plane(y)
+        for x = 1:1:$l(line) {
+            s seats(y,x)=$e(line,x)
+        }
+    }
+    s count=1
+    while count>0 {
+        ;d show(.seats)
+        w !
+        s count=$$step(.seats)
+    }
+    s count=0
+     s x= $o(seats(""))
+    while x'="" {
+        s y=$o(seats(x,""))
+        while y'="" {
+            if seats(x,y)="#" { s count=count+1 }
+            s y=$o(seats(x,y)) 
+        }
+        s x=$o(seats(x))
+    }
+    return count
+}
+
+show(seats)
+{
+     s x= $o(seats(""))
+    while x'="" {
+        s y=$o(seats(x,""))
+        while y'="" {
+            w seats(x,y)
+            s y=$o(seats(x,y)) 
+        }
+        w !
+        s x=$o(seats(x))
+    }
+}
+
+step(seats){
+    s changes=0
+    m nseat=seats
+    s x= $o(seats(""))
+    while x'="" {
+        s y=$o(seats(x,""))
+        while y'="" {
+            s countf=0
+            s counto=0
+            s countc=0
+            for dx = -1:1:1 {
+                for dy = -1:1:1 {
+                    s c=x_","_y
+                    s nx=(x+dx)_","_(y+dy)
+                    if '((dx=0)&&(dy=0)) {
+                        s tile=$g(seats(x+dx,y+dy),"_")
+                        ;w "*",tile,"*"
+                        if tile="_" {s countc = countc+1 }
+                        if tile="L" {s countf=countf+1}
+                        if tile="#" {s counto=counto+1}
+                    }
+                }
+            }
+            s currentTile=seats(x,y)
+            ;w !,countf,*9,counto,*9,currentTile,*9
+            if currentTile="L",counto=0 {
+                s nseat(x,y)="#",changes=changes+1
+            }
+            if currentTile="#",counto>=4 {
+                s nseat(x,y)="L",changes=changes+1
+            }
+            ;w nseat(x,y),!
+            s y=$o(seats(x,y))
+        }
+        s x=$o(seats(x))
+    }
+    m seats=nseat
+    return changes
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.plane)
+    for y = 1:1:plane {
+        s line=plane(y)
+        for x = 1:1:$l(line) {
+            s seats(y,x)=$e(line,x)
+        }
+    }
+    s count=1
+    /*d show(.seats)
+    d step2(.seats)
+    w !,"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx"
+    d step2(.seats)
+    d show(.seats)
+    */
+    while count>0 {
+        ;d show(.seats)
+        s count=$$step2(.seats)
+    }
+    s count=0
+     s x= $o(seats(""))
+    while x'="" {
+        s y=$o(seats(x,""))
+        while y'="" {
+            if seats(x,y)="#" { s count=count+1 }
+            s y=$o(seats(x,y)) 
+        }
+        s x=$o(seats(x))
+    }
+    return count
+}
+
+step2(seats){
+    s changes=0
+    m nseat=seats
+    s x= $o(seats(""))
+    while x'="" {
+        s y=$o(seats(x,""))
+        while y'="" {
+            s countf=0
+            s counto=0
+            s countc=0
+            for dx = -1:1:1 {
+                for dy = -1:1:1 {
+                    s c=x_","_y
+                    s nx=(x+dx)_","_(y+dy)
+                    if '((dx=0)&&(dy=0)) {
+                        s nx=x+dx,ny=y+dy
+                        s tile=$g(seats(x+dx,y+dy),"X")
+                        while tile="." {
+                            s ny=ny+dy,nx=nx+dx
+                            s tile=$g(seats(nx,ny),"X")
+                        }
+                        if tile="L" {s countf=countf+1}
+                        if tile="#" {s counto=counto+1}
+                    }
+                }
+            }
+            s currentTile=seats(x,y)
+            ;w !,countf,*9,counto,*9,currentTile,*9
+            if currentTile="L",counto=0 {
+                s nseat(x,y)="#",changes=changes+1
+            }
+            if currentTile="#",counto>4 {
+                s nseat(x,y)="L",changes=changes+1
+            }
+            ;w nseat(x,y),!
+            s y=$o(seats(x,y))
+        }
+        s x=$o(seats(x))
+    }
+    m seats=nseat
+    return changes
+}

@@ -2,10 +2,109 @@ ROUTINE AOC2020D10
 
 Part1(Input)[]PUBLIC
 {
-    d FileReader^AOCutils(Input,.xmas)
+    s o=1,t=1
+    d FileReader^AOCutils(Input,.ad)
+    for i = 1:1:ad {
+        s list(ad(i))=""
+    }
+    s p=$o(list(""))
+    s x=$o(list(p))
+    while x'=""{
+        w p,*9,x,!
+        i x-p=1 { s o=o+1 }
+        i x-p=3 { s t=t+1 }
+        s p=x,x=$o(list(x))
+    }
+    w o,*9,t,!
+    return o*t
 }
 
 Part2(Input)[]PUBLIC
 {
-    d FileReader^AOCutils(Input,.xmas)
+    s ^||cnt=0,res=1
+    d FileReader^AOCutils(Input,.ad)
+    for i = 1:1:ad {
+        s list(ad(i))=""
+    }
+    s t=0,^||cnt=0
+    s p=$o(list(""))
+    s x=$o(list(p))
+    s xx=0
+    while x'=""{
+        i (x-p)=3 {
+            s t=t+1
+            s y=p
+            while y'="",y>xx
+            {
+                s xl(y)=""
+                s y=$o(list(y),-1)
+            }
+            ;zw xl            
+            d go(xx,"",.xl)
+            k xl
+            ;w ^||cnt,!,!
+            s xx=p
+            s res=res*^||cnt
+            s ^||cnt=0
+        }
+        s p=x,x=$o(list(x))
+    }
+    s y=p
+    while y'="",y>xx
+    {
+        s xl(y)=""
+        s y=$o(list(y),-1)
+    }
+    ;zw xl            
+    d go(xx,"",.xl)
+            s res=res*^||cnt
+            s ^||cnt=0
+    /*
+    s x=$o(list(""))
+    while x'=""{
+        s xc=0
+        for i = 1:1:3 {
+            if $d(list(x+i)),'$d(used(x+i)){
+                if $$validate(x+i,.list) { s xc=xc+1,used(x+i)="" }
+                else { w !,"###"}
+            }
+        }
+        w xc,!
+        if xc'=0 { s res=res*xc}
+        s x=$o(list(x))
+    }
+    */
+    return res
+    //s end=$o(list(""),-1)
+    //d go(0,"",.list,end)
+    //return ^||cnt
+}
+
+go(next,current,list)
+{
+    ;w !,next,*9
+    s end=1
+    for i = 1:1:3 {
+        ;w i,*9
+        i ($d(list(next+i))) {
+            ;w "=",next+i,*9
+            s end=0
+            s xx=current_","_(next+i)
+            d go(next+i,xx,.list)
+        }
+    }
+    i end { s ^||cnt=^||cnt+1
+     ;w current,! 
+     }
+}
+
+validate(start,list){
+    s ok=1
+    s next=$o(list(start))
+    while next'="",ok {
+        w !,start,*9,next,*9,(next-start)
+        if (next-start)>4 { s ok=0 }
+        s start=next,next=$o(list(next))
+    }
+    return ok
 }
