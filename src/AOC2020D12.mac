@@ -1,0 +1,98 @@
+ROUTINE AOC2020D12
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.map)
+    s n=0,e=0,f="e"
+    for i = 1:1:map {
+        s line=map(i)
+        s ins=$e(line,1)
+        s dist=$e(line,2,*)
+        if ins="F" {
+            if f="e" { s e=e+dist }
+            elseif f="n" { s n=n+dist }
+            elseif f="w" { s e=e-dist }
+            elseif f="s" { s n=n-dist }
+        } elseif ins="R" {
+            if f="e"{
+                if dist=90 { s f="s" }
+                elseif dist=180 { s f="w" }
+                elseif dist=270 { s f="n" }
+            } elseif f="n" {
+                if dist=90 { s f="e" }
+                elseif dist=180 { s f="s" }
+                elseif dist=270 { s f="w" }
+            } elseif f="s" {
+                if dist=90 { s f="w" }
+                elseif dist=180 { s f="n" }
+                elseif dist=270 { s f="e" }
+            } elseif f="w" {
+                if dist=90 { s f="n" }
+                elseif dist=180 { s f="e" }
+                elseif dist=270 { s f="s" }
+            }
+        } elseif ins="L" {
+            if f="e"{
+                if dist=90 { s f="n" }
+                elseif dist=180 { s f="w" }
+                elseif dist=270 { s f="s" }
+            } elseif f="n" {
+                if dist=90 { s f="w" }
+                elseif dist=180 { s f="s" }
+                elseif dist=270 { s f="e" }
+            } elseif f="s" {
+                if dist=90 { s f="e" }
+                elseif dist=180 { s f="n" }
+                elseif dist=270 { s f="w" }
+            } elseif f="w" {
+                if dist=90 { s f="s" }
+                elseif dist=180 { s f="e" }
+                elseif dist=270 { s f="n" }
+            }
+        } elseif ins="N" {
+            s n=n+dist
+        } elseif ins="E" {
+            s e=e+dist
+        } elseif ins="S" {
+            s n=n-dist
+        } elseif ins="W"{
+            s e=e-dist
+        }
+
+    }
+    return n+e
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.map)
+    s n=0,e=0,f="e",wn=1,we=10
+    for i = 1:1:map {
+        s line=map(i)
+        w line,*9
+        s ins=$e(line,1)
+        s dist=$e(line,2,*)
+        if ins="F" {
+            s n=n+(dist*wn)
+            s e=e+(dist*we)
+        } elseif ins="R" {
+            for d = 90:90:dist {
+                s x=we,we=wn,wn=-x                 
+            }
+        } elseif ins="L" {
+            for d = 90:90:dist {
+                s x=we,we=-wn,wn=x 
+            }
+        } elseif ins="N" {
+            s wn=wn+dist
+        } elseif ins="E" {
+            s we=we+dist
+        } elseif ins="S" {
+            s wn=wn-dist
+        } elseif ins="W"{
+            s we=we-dist
+        }
+        w we,*9,wn,*9,e,*9,n,!
+    }
+    return $zabs(n)+$zabs(e)
+}
