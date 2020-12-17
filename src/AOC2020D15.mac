@@ -1,0 +1,46 @@
+ROUTINE AOC2020D15
+
+Part1(Input,n)[]PUBLIC
+{
+    s series=Input
+    for i = 1:1:$l(Input,",") {
+        s xx=$p(Input,",",i)
+        s ^||number(xx,1)=i
+    }
+    s next=$p(series,",",$l(series,","))
+    for i = $l(Input,","):1:(n-1) {
+        ;w next,!
+        i '$d(^||number(next,2)) {
+            s next=0
+        } else {
+            ;w *9,"->",number(next,2),*9,number(next,1),!
+            s next=^||number(next,2)-^||number(next,1)
+        }
+        i '$d(^||number(next,1)) { s ^||number(next,1)=i+1 }
+        elseif '$d(^||number(next,2)) { s ^||number(next,2)=(i+1) }
+        else { s ^||number(next,1)=^||number(next,2),^||number(next,2)=i+1 }
+        ;w "#",series,!
+    }
+    ;w !,series,!
+    return next ;$p(series,",",$l(series,","))
+}
+
+getCount(list,number){
+    s count=0
+    for i = 1:1:$l(list,",") {
+        s c=$p(list,",",i)
+        i c=number { s count=count+1 }
+    }
+    return count
+}
+getNext(list) {
+    s t=$p(list,",",$l(list,","))
+    s found=0,i=$l(list,",")-1
+    while i>0,found=0 {
+        s x=$p(list,",",i)
+        i x=t { s found=1 }
+        else { s i=i-1 }
+    }
+    return $l(list,",")-i
+}
+

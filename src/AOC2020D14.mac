@@ -1,0 +1,113 @@
+ROUTINE AOC2020D14
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.prog)
+    s maks=""
+    for i = 1:1:prog {
+        s line=prog(i)
+        i $p(line," ")="mask" { s mask=$p(line," ",3) }
+        else {
+            s loc=$p($p(line,"[",2),"]")
+            s int=$p(line," ",3)
+            s bit=$$intToBit(int)
+            w $$applyMask(bit,mask),*9,$$bitToInt($$applyMask(bit,mask)),!
+            s mem(loc)=$$bitToInt($$applyMask(bit,mask))
+        }
+    }
+    s sum=0
+    s x=$o(mem(""))
+    while x'="" {
+        s sum=sum+mem(x)
+        s x=$o(mem(x))
+    }
+    return sum
+}
+
+intToBit(int,pos=35)[]PUBLIC
+{
+    s bit=""
+    for i = pos:-1:0 {
+        s bit = bit_(int\(2**i))
+        s int=int#(2**i)
+    }
+    return bit
+}
+
+bitToInt(bit)[]PUBLIC
+{
+    s int=0
+    for i = 1:1:$l(bit) {
+        s x=$l(bit)-i
+        s int=int+($e(bit,i)*(2**x))
+    }
+    return int
+}
+
+applyMask(bit,mask)[]PUBLIC
+{
+    s res=""
+    ;w !,bit,!,mask,!
+    for i = 1:1:$l(bit) {
+        s b=$e(bit,i),m=$e(mask,i)
+        if m="X" { s res=res_b }
+        else { s res=res_m }
+    }
+    ;w res,!
+    return res
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.prog)
+    k ^||mem
+    s maks="",sum=0
+    for i=1:1:prog {
+        s line=prog(i)
+        i $p(line," ")="mask" { s mask=$p(line," ",3) }
+        else {
+            s loc=$p($p(line,"[",2),"]")
+            s int=$p(line," ",3)
+            s bit=$$intToBit(loc)
+            s xx=($$applyMask2(bit,mask))
+            ;w !,xx,!
+            d sum(xx,$l(xx),int)
+        }
+    }
+    s x=$o(^||mem("")),sum=0
+    while x'=""{
+        s sum=sum+^||mem(x)
+        s x=$o(^||mem(x))
+    }
+    return sum
+}
+
+sum(current,pos,sum) {
+    i pos=0{
+        ;w current,*9,$$bitToInt(current),!
+        s ^||mem($$bitToInt(current))=sum
+    } else {
+        i $e(current,pos)'="X" {  d sum(current,pos-1,sum)}
+        else {
+            f i=0,1 {
+                s xc=current
+                s $e(xc,pos)=i
+                d sum(xc,pos-1,sum)
+            }
+        }
+    }
+}
+
+applyMask2(bit,mask)[]PUBLIC
+{
+    s res=""
+    ;w !,bit,!,mask,!
+    for i = 1:1:$l(bit) {
+        s b=$e(bit,i),m=$e(mask,i)
+        if m="X" { s res=res_"X" }
+        elseif m="0" { s res=res_b }
+        else { s res=res_1}
+    }
+    ;w res,!
+    return res
+}

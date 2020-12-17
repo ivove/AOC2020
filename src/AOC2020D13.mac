@@ -1,0 +1,106 @@
+ROUTINE AOC2020D13
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.bus)
+    s arival=bus(1)
+    s line=bus(2)
+    s min=999999999
+    s id=""
+    for i = 1:1:$l(line,",") {
+        s time=$p(line,",",i)
+        if time'="x" {
+            s x=$j(arival/time,0,0)
+            i $e($p(arival/time,".",2),1)<5 { s x=x+1 }
+            s dif=$zabs(arival-(x*time))
+            w arival,*9,x,*9,time,*9,dif,*9,arival/time,!
+            if dif<min {
+                s min=dif,id=time
+            }
+        }
+    }
+    w !,id,*9,min,!
+    return (id*min)
+}
+
+Part2(Input)[res]PUBLIC
+{
+    d FileReader^AOCutils(Input,.bus)
+    s arival=bus(1)
+    s line=bus(2)
+    s maxid=0,maxpos=0
+    for i = 1:1:$l(line,",") {
+        s time=$p(line,",",i)
+        if time'="x" { 
+            s xx(i-1)=time 
+            if time>maxid { s maxid=time,maxpos=i-1 }
+        }
+    }
+    s res="",i=$j(100000000000000/maxid,0,0)+1
+    while res="" {
+        s xtime=maxid*i
+        s x=$o(xx("")),cont=1
+        while cont,x'=""{
+            if xx(x)'=maxid {
+                s test=xtime-(maxpos-x)
+                ;w test,*9,x,*9,xx(x),*9,maxpos,*9,xtime,!
+                i test#xx(x)'=0 { s cont=0 }
+            }
+            s x=$o(xx(x))
+        }
+        i cont=1 { s res=xtime-maxpos }
+        s i=i+1
+    }
+    return res
+
+}
+
+test()[]PUBLIC
+{ ;23,x,x,x,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,509,x,x,x,x,x,x,x,x,x,x,x,x,13,17,x,x,x,x,x,x,x,x,x,x,x,x,x,x,29,x,401,x,x,x,x,x,37,x,x,x,x,x,x,x,x,x,x,x,x,19
+  ; 
+    k ^||a,^||b,^||c,^||d
+    s (a,b,c,d)=100000000000000
+    s res=""
+    while res=""{
+        s x=a
+        i b>a { s x=b }
+        i c>b { s x=c }
+        i d>c { s x=d }
+        s a=$$go(0,23,13,41,x+23)
+        s b=$$go(23,509,36,13,x+509)        
+        s c=$$go(37,17,52,29,x+37)
+        s d=$$go(54,401,60,37,x+401)
+        s ^||a(a)="",^||b(b)="",^||c(c)="",d(d)=""
+        i $d(^||b(a)),$d(^||c(a)),$d(^||d(a)),(a+73)#19=0 { s res=a }
+        i $d(^||a(b)),$d(^||c(b)),$d(^||d(b)),(b+73)#19=0 { s res=b }
+        i $d(^||b(c)),$d(^||a(c)),$d(^||d(c)),(c+73)#19=0 { s res=c }
+        i $d(^||b(d)),$d(^||c(d)),$d(^||a(d)),(d+73)#19=0 { s res=d }
+    }
+    return res
+}
+
+test2()[] PUBLIC
+{
+    s res="",x=159409150441116
+    while res="" {
+        s x=$$go(23,509,54,401,x+509)
+        i (x#23=0),(x+13)#41=0,(x+36)#13=0,(x+37)#17=0,(x+52)#29=0,(x+60)#37=0,(x+73)#19=0 { s res=x }
+    }
+    return res
+}
+
+go(pos1,id1,pos2,id2,from="")[]PUBLIC {
+    s maxid=id1,maxpos=pos1,oid=id2,opos=pos2
+    i id2>id1 { s maxid=id2,maxpos=pos2,oid=id1,opos=pos1 }
+    s res="",i=1
+    if from'="" { s i=$j(from/maxid,0,0)}
+    ;w i,!
+    while res="" {
+        s xtime=maxid*i
+        s test=xtime-(maxpos-opos),cont=1
+        i test#oid'=0 { s cont=0 }
+        i cont=1 { s res=xtime-maxpos }
+        s i=i+1
+    }
+    return res
+}
