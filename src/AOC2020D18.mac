@@ -1,0 +1,97 @@
+ROUTINE AOC2020D18
+
+Part1(Input)[]PUBLIC
+{
+    s res=0
+    d FileReader^AOCutils(Input,.home)
+    for i = 1:1:home {
+        s res=res+$$solve(home(i))
+    }
+    return res
+}
+
+solve(exp)[]PUBLIC
+{ 
+    s res="",sign="+"
+    for i = 1:1:$l(exp) {
+        s t=$e(exp,i)
+        if (t="+")||(t="*") { s sign = t }
+        elseif t'=" " {
+            if t="(" {
+                s end=i+1,cont=1
+                while cont{
+                    s x=$e(exp,end)
+                    ;w x
+                    ;r xxx
+                    i x="(" { s cont=cont+1 }
+                    elseif x=")" {s cont=cont-1 }
+                    s end=end+1
+                }
+                s tempexp=$e(exp,i+1,end-2)
+                s t=$$solve(tempexp)
+                s i=end
+            }
+
+            i sign="+"{ s res=res+t}
+            else { s res=res*t}
+            ;w t,*9,sign,*9,res,!
+        }
+    }
+    
+    ;w exp,"=",res,!
+    return res
+}
+
+Part2(Input)[]PUBLIC
+{
+    s res=0
+    d FileReader^AOCutils(Input,.home)
+    for i = 1:1:home {
+        s line=home(i)
+        s res=res+($$advanced(home(i)))
+    }
+    return res
+}
+
+advanced(exp)[]PUBLIC{
+   s exp=$tr(exp," ","")
+   ;w "in: ",exp,!
+   s ret=0
+   while exp["("{
+        s pos1=$find(exp,"(")
+        s cont=1,pos2=pos1
+        while cont{
+            s xx=$e(exp,pos2)
+            i xx="(" { s cont=cont+1 }
+            i xx=")" { s cont=cont-1 }
+            s pos2=pos2+1
+        }        
+        s sub=$e(exp,pos1,pos2-2)
+        i sub["(" { s part=$$advanced(sub) }
+        else { s part=$$advancedSolve(sub) }
+        s exp=$e(exp,1,pos1-2)_part_$e(exp,pos2,*)
+        ;w sub,*9,part,*9,exp,!
+        ;r x
+   }
+   ;w "out: ",exp,!
+   return $$advancedSolve(exp)
+}
+
+advancedSolve(exp) []PUBLIC
+{
+    s exp=$tr(exp," ","")
+    s ret=1
+    while exp["+"{
+        s a=$p(exp,"+"),b=$p($p(exp,"+",2),"*")
+        i a ["*" { s a =$p(a,"*",$l(a,"*")) }
+        s pos=$find(exp,"+")
+        s sum=a+b
+        ;w a,*9,b,*9,sum,!
+        s exp=$e(exp,1,pos-$l(a)-2)_sum_$e(exp,pos+$l(b),*)
+    }
+    for i = 1:1:$l(exp,"*") {
+        s xx=$p(exp,"*",i)
+        s ret=ret*xx
+    }
+    return ret
+}

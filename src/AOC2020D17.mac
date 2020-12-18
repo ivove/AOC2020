@@ -1,0 +1,172 @@
+ROUTINE AOC2020D17
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.cube)
+    for x = 1:1:cube {
+        s line = cube(x)
+        for y = 1:1:$l(line) {
+            s grid(0,x,y)=$e(line,y)
+        }
+    }
+    for turn = 1:1:6 {
+        ;d showGrid(.grid)
+        k ngrid
+        s min=$o(grid(""))
+        s min=min-1
+        s max=$o(grid(""),-1)
+        s max=max+1
+        for z = min:1:max {
+            s minx=($o(grid(0,"")))-1
+            s maxx=$o(grid(0,""),-1)+1
+            for x = minx:1:maxx {
+                s miny=$o(grid(0,1,""))-1
+                s maxy=$o(grid(0,1,""),-1)+1
+                for y = miny:1:maxy {
+                    s value=$g(grid(z,x,y),".")
+                    s activen=$$countNeighbours(x,y,z,.grid)
+                    ;w !,x,*9,y,*9,activen
+                    if value="#",activen=2 { s ngrid(z,x,y)="#" }
+                    elseif value="#",activen=3 { s ngrid(z,x,y)="#" }
+                    elseif value="#" { s ngrid(z,x,y)="." }
+                    elseif value=".",activen=3 { s ngrid(z,x,y)="#" }
+                    else { s ngrid(z,x,y)="." }
+                }
+            }
+        }
+        k grid
+        m grid=ngrid
+    }
+        ;d showGrid(.grid)
+
+    s count=0
+    s z=$o(grid(""))
+    while z'="" {
+        s x=$o(grid(z,""))
+        while x'="" {
+            s y=$o(grid(z,x,""))
+            while y'="" {
+                i $g(grid(z,x,y))="#" { s count= count+1}
+                s y=$o(grid(z,x,y))
+            }
+            s x=$o(grid(z,x))
+        }
+        s z=$o(grid(z))
+    }
+    return count
+}
+
+countNeighbours(x,y,z,grid)
+{
+    s count=0
+    for tz = z-1:1:z+1 {
+        for tx = x-1:1:x+1 {
+            for ty = y-1:1:y+1 {
+                s me=0
+                i tx=x,tz=z,ty=y { s me=1 }
+                i 'me,$g(grid(tz,tx,ty),".")="#" { s count=count+1 }
+            }
+        }
+    }
+    return count
+}
+
+showGrid(grid) {
+    s z=$o(grid(""))
+    while z'="" {
+        w "plane: ",z,!
+        s x=$o(grid(z,""))
+        while x'="" {
+            s y=$o(grid(z,x,""))
+            while y'="" {
+                w grid(z,x,y)
+                s y=$o(grid(z,x,y))
+            }
+            w !
+            s x=$o(grid(z,x))
+        }
+        w !,!
+        s z=$o(grid(z))
+    }
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.cube)
+    for x = 1:1:cube {
+        s line = cube(x)
+        for y = 1:1:$l(line) {
+            s grid(0,0,x,y)=$e(line,y)
+        }
+    }
+    for turn = 1:1:6 {
+        ;d showGrid(.grid)
+        k ngrid
+        s min=$o(grid(""))
+        s min=min-1
+        s max=$o(grid(""),-1)
+        s max=max+1
+        for z = min:1:max {
+            s minw=$o(grid(0,""))-1
+            s maxw=$o(grid(0,""))+1
+            for w = min:1:max {
+                s minx=($o(grid(0,0,"")))-1
+                s maxx=$o(grid(0,0,""),-1)+1
+                for x = minx:1:maxx {
+                    s miny=$o(grid(0,0,1,""))-1
+                    s maxy=$o(grid(0,0,1,""),-1)+1
+                    for y = miny:1:maxy {
+                        s value=$g(grid(z,w,x,y),".")
+                        s activen=$$countNeighbours2(x,y,z,w,.grid)
+                        ;w !,x,*9,y,*9,activen
+                        if value="#",activen=2 { s ngrid(z,w,x,y)="#" }
+                        elseif value="#",activen=3 { s ngrid(z,w,x,y)="#" }
+                        elseif value="#" { s ngrid(z,w,x,y)="." }
+                        elseif value=".",activen=3 { s ngrid(z,w,x,y)="#" }
+                        else { s ngrid(z,w,x,y)="." }
+                    }
+                }
+            }
+        }
+        k grid
+        m grid=ngrid
+    }
+        ;d showGrid(.grid)
+    ;zw grid
+    s count=0
+    s z=$o(grid(""))
+    while z'="" {
+        s w=$o(grid(z,""))
+        while w'=""{
+            s x=$o(grid(z,w,""))
+            while x'="" {
+                s y=$o(grid(z,w,x,""))
+                while y'="" {
+                    i $g(grid(z,w,x,y))="#" { s count= count+1}
+                    s y=$o(grid(z,w,x,y))
+                }
+                s x=$o(grid(z,w,x))
+            }
+            s w=$o(grid(z,w))
+        }
+        s z=$o(grid(z))
+    }
+    return count
+}
+
+countNeighbours2(x,y,z,w,grid)
+{
+    s count=0
+    for tz = z-1:1:z+1 {
+        for tw = w-1:1:w+1 {
+            for tx = x-1:1:x+1 {
+                for ty = y-1:1:y+1 {
+                    s me=0
+                    i tw=w,tx=x,tz=z,ty=y { s me=1 }
+                    i 'me,$g(grid(tz,tw,tx,ty),".")="#" { s count=count+1 }
+                }
+            }
+        }
+    }
+    return count
+}
