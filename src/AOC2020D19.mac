@@ -1,0 +1,222 @@
+ROUTINE AOC2020D19
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.mes)
+    k ^||pos,^||rules
+    s type="rules",count=0
+    for i = 1:1:mes
+    {
+        s line=mes(i)
+        ;w line,!
+        i line="" { s type="mes"}
+        elseif type="rules" {
+            s number=$p(line,":")
+            s r=$p(line,":",2)
+            i r[""""{
+                s known(number)=1
+                s known(number,1)=$tr(r,""" ","")
+            } else {
+                s rules(number)=r
+            }
+        }
+        elseif type="mes"{
+            s message(i)=line
+        }
+    }
+
+    s cont=2
+    while cont {
+        s x=$o(rules(""))
+        while x'="" {
+            s rule=rules(x)
+            i $$allKnown(rule,.known){
+                s nrule=""
+                i rule'["|" {
+                    for i = 1:1:$l(rule," ") {
+                        s r=$p(rule," ",i)
+                        i r'="" {
+                            s k=known(r)
+                            s atl=$g(known(x),0)
+                            i atl=0 {
+                                s known(x,1)="",atl=1,known(x)=1
+                            }
+                            f j=1:1:atl{
+                                s pre=known(x,j)
+                                for y=1:1:k {
+                                    i y>1 { s known(x)=$g(known(x))+1 }
+                                    s known(x,j+y-1)=pre_known(r,y)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    for i = 1:1:$l(rule,"|") {
+                        s r=$p(rule,"|",i)
+                        s a =$p(r," ",2),b=$p(r," ",3)
+                        s k1=known(a),k2=""
+                        i b'="" { s k2=known(b)}
+                        else { s k2=1 }
+                        s xx=$g(known(x,1))
+                        f ia=1:1:k1{
+                            f ib=1:1:k2{
+                                s known(x)=$g(known(x))+1
+                                s known(x,known(x))=known(a,ia)
+                                i b'="" { s known(x,known(x))=known(x,known(x))_$g(known(b,ib)) }
+
+                            }
+                        }
+                    }
+                }
+                w x,*9,rules(x),!
+                zw known(x)
+                k rules(x)
+            }
+            s x=$o(rules(x))
+        }
+        s cont=$d(rules)
+   }
+
+    ;d build("",0,.rules)
+    ;s exp=$tr($$expand(.rules,0)," ","")
+    ;d build(exp,"",.rules)
+    s ^||pos=1
+    m ^||rules=rules
+    ;d next(1,0,.rules,.tree)
+
+    zw rules,known
+    s nr=$o(known(0,""))
+    while nr'="" {
+        s xn(known(0,nr))=""
+        s nr=$o(known(0,nr))
+    }
+    s xx=$o(message("")),count=0
+    while xx'="" {
+        s rule="|"_known(0)_"|"
+        ;w !,rule,!
+        ;w message(xx)
+        i $d(xn(message(xx))) { 
+            s count=count+1 
+            ;w "->",message(xx),!
+        }
+        s xx=$o(message(xx))
+    }
+    return count
+}
+
+allKnown(rule,known){
+    s k=1
+    for i = 1:1:$l(rule," ") {
+        s r=$p(rule," ",i)        
+        i r?.N,r'=""{
+            i '$d(known(r)) { s k=0 }
+        }
+    }
+    return k
+}
+
+next(nr,rules,tree,node){
+    s rule=$g(rules(nr))
+    i rule?.A { 
+        s tree(node)=$g(tree(node))_rule
+    } else {
+        i rule'["|" {
+            s cnt=0
+            for y = 1:1:$l(rule," ") {
+                s xx=$p(rule," ",y)
+                i xx'="" { 
+                    d next(pos+cnt,xx,.rules,.tree)
+                    s cnt=cnt+1
+                }
+            }
+        } 
+        else {
+             for y = 1:1:$l(rule,"|") {
+                s xx=$p(rule,"|",y)
+                s cnt=0
+                for j = 1:1:$l(xx," ") {
+                    s zz=$p(xx," ",j)
+                    i zz'="" { 
+                        d next(pos+cnt,zz,.rules,.tree)
+                        s cnt=cnt+1
+                    }
+                }
+            }
+        }
+    }
+}
+
+go(current,nr,rules,xnr){
+    s rule=rules(nr)
+    ;w rule,!
+    i xnr=1 { w rule,!}
+    i rule?.A { s ^||pos(xnr)=$g(^||pos(xnr))_rule }
+    else {
+        i rule'["|" {
+            for y = 1:1:$l(rule," ") {
+                s xx=$p(rule," ",y)
+                ;w rule,*9,xx,!
+                i xx'="" { d go("",xx,.rules,xnr) }
+            }
+        } else {
+            s zz=^||pos(xnr) 
+            ;w zz,*9,nr,*9,xnr,*9,rule,!
+            for y = 1:1:$l(rule,"|") {
+                i y>1 { 
+                    s ^||pos=^||pos+1
+                    s ^||pos(^||pos)=zz
+                }
+                s xx=$p(rule,"|",y)
+                for j = 1:1:$l(xx," ") {
+                    s yy=$p(xx," ",j)
+                    i xnr=1 { w "*",j,"*",*9,xx,*9,rule,*9,yy,! }
+                    i yy'="" {
+                        ;w yy,!
+                        d go("",yy,.rules,xnr)
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+expand(rules,nr) {
+    
+    return nrule
+}
+
+build(part,current,rules)
+{
+    ;w part,!
+    while part["(" {
+        for i = 1:1:$l(part) {
+            w i,*9,part,*9,$e(part,i),!
+            i $e(part,i)="(" {
+                s cont=1,end=i+1
+                while cont {
+                    s c=$e(part,end)
+                    i c=")" { s cont=cont-1 }
+                    i c="(" { s cont=cont+1 }
+                    s end=end+1
+                }
+                s sub=$e(part,i+1,end-2),i=$l(current)
+                w sub,*9,"*",i,"*",*9,$l(part),*9,part,*9,"-",end,"-",*9,current,!
+                r x
+                i sub?.N { s current= current_rules(sub) }
+                else {
+                    i sub["|" {
+                        for y = 1:1:$l(sub,"|") {
+                            d build($p(sub,"|",y),current,.rules)
+                        }
+                    } else {
+                        d build(sub,current,.rules)
+                    }
+                }
+                s part=current_$e(part,end,*)
+            }
+        }
+    }
+    w part,!
+    i current'="" { s ^||pos(current)="" }
+}

@@ -1,0 +1,268 @@
+ROUTINE AOC2020D20
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.tiles)
+    s id=""
+    for i = 1:1:tiles {
+        s line=tiles(i)
+        i $e(line,1)="T"{
+            s id=$p($p(line," ",2),":")
+        } elseif line'=""{
+            s tile(id)=$g(tile(id))+1
+            s tile(id,tile(id))=line
+        }
+    }
+
+    s id=$o(tile(""))
+    while id'="" {
+        s edge(id,1)=tile(id,1)
+        s edge(id,2)=tile(id,10)
+        for i = 1:1:10 {
+            s edge(id,3)=$g(edge(id,3))_$e(tile(id,i),1)
+            s edge(id,4)=$g(edge(id,4))_$e(tile(id,i),10)
+        }
+        s id=$o(tile(id))
+    }
+
+    s res=1
+
+    s id=$o(edge(""))
+    while id'=""{
+        s tt=0
+        for i = 1:1:4 {
+            ;w id,*9,i,*9,$$check(id,i,.edge),!
+            i '$$check(id,i,.edge) { s tt=tt+1 }
+        }
+        ;w id,!
+        i tt=2 { 
+            s res=res*id 
+            ;w id,!
+        }
+        s id=$o(edge(id))
+    }
+
+    ;zw edge
+    return res
+}
+
+check(id,nr,edge) {
+    s found=0
+    ;w nr,!
+    s tid=$o(edge(""))
+    s test=edge(id,nr)
+    while tid'="",found=0 {
+        i id'=tid {
+            for i = 1:1:4 {
+                s xx=edge(tid,i)
+                i xx=test { s found=1 
+                }
+            }
+        }
+        s tid=$o(edge(tid))
+    }
+    s otest=test,test=""
+    for i = 1:1:$l(otest) {
+        s test=$e(otest,i)_test
+    }
+    s tid=$o(edge(""))
+     while tid'="",found=0 {
+        i id'=tid {
+            for i = 1:1:4 {
+                s xx=edge(tid,i)
+                i xx=test { s found=1 
+                }
+            }
+        }
+        s tid=$o(edge(tid))
+    }
+    return found
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.tiles)
+    s id="",cnt=0
+    for i = 1:1:tiles {
+        s line=tiles(i)
+        i $e(line,1)="T"{
+            s id=$p($p(line," ",2),":"),cnt=cnt+1
+        } elseif line'=""{
+            s tile(id)=$g(tile(id))+1
+            s tile(id,tile(id))=line
+        }
+    }
+    s side=$zsqr(cnt)
+    w side,!
+
+    s id=$o(tile(""))
+    while id'="" {
+        s edge(id,1)=tile(id,1)
+        s edge(id,2)=tile(id,10)
+        for i = 1:1:10 {
+            s edge(id,3)=$g(edge(id,3))_$e(tile(id,i),1)
+            s edge(id,4)=$g(edge(id,4))_$e(tile(id,i),10)
+        }
+        s id=$o(tile(id))
+    }
+
+    s id=$o(edge("")),corner=""
+    while id'=""{
+        s cnt=0
+        for i = 1:1:4 {
+            s xx=$$check2(id,i,.edge)
+            i $ll(xx)>1 {
+                s temp(id,i)=xx,cnt=cnt+1
+            }
+        }
+        i cnt=2,corner="" { s corner=id }
+        s id=$o(edge(id))
+    }
+    zw temp
+    w corner,!
+    s next=corner,line=1,col=1,fromnr=4
+    /*while next {
+        s nr=fromnr
+        ;if fromnr=3 {s nr=4 }
+        ;else {s nr=3 }
+        s xx=$g(temp(next,nr))
+        i xx'="" {
+            i $li(xx,3)=0 {
+                f i=1:1:10{
+                    for j = 1:1:10 {
+                        w next,*9,j+(10*(col-1)),!
+                        s img(i+(10*(line-1)),j+(10*(col-1)))=$e(tile(next,i),j)
+                    }
+                }
+            } else {
+                f i=1:1:10{
+                    for j = 1:1:10 {
+                        w next,*9,j+(10*(col-1)),!
+                        s img(i+(10*(line-1)),j+(10*(col-1)))=$e(tile(next,i),11-j)
+                    }
+                }
+            }
+            s done(next,nr)=""
+            s fromnr=$li(xx,2)
+            s next=$li(xx,1),col=col+1
+            i '$d(done(next)) { s next="" }
+        } else { s next="" }
+    }*/
+    m xxtemp=temp
+    s nr=4,cornernr=4
+    for line=1:1:side {
+        while next'="" {
+            s img(line,col)=next,col=col+1
+            s xx=$g(temp(next,nr))
+            ;k temp(next,nr)
+            i xx'="" {
+                k temp($li(xx,1),$li(xx,2))
+                s next=$li(xx,1) 
+                s xnr=$li(xx,2)
+                i xnr=1 {s nr=2}
+                i xnr=2 {s nr=1}
+                i xnr=4 {s nr=3}
+                i xnr=3 {s nr=4}
+            }
+            else { s next="" }
+            
+        }
+        s nn=1
+        i (cornernr=3)||(cornernr=4){
+            s xx=$g(temp(corner,1))
+            i xx="" { s xx=$g(temp(corner,2)),nn=2 }
+        } else {
+            s xx=$g(temp(corner,3)),nn=3
+            i xx="" { s xx=$g(temp(corner,4)),nn=4 }
+        }
+        i xx'="" {
+            i ($li(xx,2)=3)||($li(xx,2)=4) {
+                s nr=1
+                i '$d(temp($li(xx,1),1)) {s nr=2}
+            } else {
+                s nr=3
+                i '$d(temp($li(xx,1),3)) {s nr=4}
+            }
+            ;w corner,*9,cornernr,"/",*9
+           s next=$li(xx,1)
+            ;zw xx
+            ;w "*",nr,"*",*9,next,*9,"*",$li(xx,2),"*",!
+            ;zw temp
+            k temp($li(xx,1),$li(xx,2))
+            s corner=next,col=1,cornernr=nr     
+        }   
+    }
+    k temp
+    m temp=xxtemp
+
+    f x=1:1:side{
+        f l=1:1:10{
+            f y=1:1:side {
+                s xx=img(x,y)
+                s zz=$g(temp(xx,4))
+                i zz="" { s zz=temp(xx,3) }
+                s rr=$g(temp(xx,1))
+                i rr="" { s rr=temp(xx,2) }
+                s ll=l+(10*(x-1))
+                ;i $li(zz,3)=1 { s ll=(x*10)-ll+1 }
+                f c=1:1:10{
+                    s cc= c+(10*(y-1))
+                    ;i $li(rr,3)=1 { s cc=(y*10)-cc+1 }
+                    s foto(ll,cc)=$e(tile(xx,l),c)
+                }
+            }
+        }
+    }
+
+    f l=1:1:(10*side){
+        f c=1:1:(10*side){
+            w foto(l,c)
+            i (c#10)=0 { w "   " }
+        }
+        w !
+        i (l#10)=0 { w !,! }
+    }
+    /*
+    f l=1:1:10{
+        f i=1:1:3 {
+            s xx=img(1,i)
+            w tile(xx,l),"   "
+        }
+        w !
+    }*/
+
+    zw img ;,foto
+    return 0
+}
+
+check2(id,nr,edge) {
+    s found=$lb()
+    ;w nr,!
+    s tid=$o(edge(""))
+    s test=edge(id,nr)
+    while tid'="" {
+        i id'=tid {
+            for i = 1:1:4 {
+                s xx=edge(tid,i)
+                i xx=test { s found=$lb(tid,i,0)
+                }
+            }
+        }
+        s tid=$o(edge(tid))
+    }
+    s otest=test,test=""
+    for i = 1:1:$l(otest) {
+        s test=$e(otest,i)_test
+    }
+    s tid=$o(edge(""))
+     while tid'="" {
+        i id'=tid {
+            for i = 1:1:4 {
+                s xx=edge(tid,i)
+                i xx=test { s found=$lb(tid,i,1)
+                }
+            }
+        }
+        s tid=$o(edge(tid))
+    }
+    return found
+}

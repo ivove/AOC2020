@@ -1,0 +1,6 @@
+ROUTINE AOC2020D21
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.tiles)
+}
