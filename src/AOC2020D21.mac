@@ -2,5 +2,153 @@ ROUTINE AOC2020D21
 
 Part1(Input)[]PUBLIC
 {
-    d FileReader^AOCutils(Input,.tiles)
+    d FileReader^AOCutils(Input,.al)
+    for i = 1:1:al {
+        s line=al(i)
+        s contains=$tr($p(line,"(contains ",2)," )","")
+        s prod=$p(line,"(contains ")
+        s testprod(i)=prod
+        for y = 1:1:$l(contains,",") {
+            s alergen=$p(contains,",",y)
+            s info(alergen)=$g(info(alergen))+1
+            for j = 1:1:$l(prod," ") {
+                s xx=$p(prod," ",j)
+                i xx'=""{
+                    s info(alergen,info(alergen),xx)=""
+                }
+            }
+        }
+
+    }
+    
+    s alergen=$o(info(""))
+    while alergen'="" {
+        m alinfo(alergen)=info(alergen,1)
+        s test=$o(info(alergen,1,""))
+        while test'="" {
+            for i = 2:1:info(alergen) {
+                i '$d(info(alergen,i,test)) { k alinfo(alergen,test) }
+            }
+            s test=$o(info(alergen,1,test))
+        }        
+        s alergen=$o(info(alergen))
+    }
+
+    s alergen=$o(alinfo(""))
+    while alergen'="" {
+        ;w alergen,*9
+        s prod=$o(alinfo(alergen,""))
+        ;w alergen,*9,prod,*9
+        while prod'="" {
+            ;w prod,!
+            s ing(prod)=""
+            s prod=$o(alinfo(alergen,prod))
+        }
+        s alergen=$o(alinfo(alergen))
+    }
+
+    s cnt=0
+    for i = 1:1:al {
+        s line=testprod(i)
+        for y = 1:1:$l(line) {
+            s xx=$p(line," ",y)
+            i xx'="" {
+                i '$d(ing(xx)) { s cnt=cnt+1 }
+            }
+        }
+    }
+    zw testprod,ing,alinfo
+    return cnt
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.al)
+    for i = 1:1:al {
+        s line=al(i)
+        s contains=$tr($p(line,"(contains ",2)," )","")
+        s prod=$p(line,"(contains ")
+        s testprod(i)=prod
+        for y = 1:1:$l(contains,",") {
+            s alergen=$p(contains,",",y)
+            s info(alergen)=$g(info(alergen))+1
+            for j = 1:1:$l(prod," ") {
+                s xx=$p(prod," ",j)
+                i xx'=""{
+                    s info(alergen,info(alergen),xx)=""
+                }
+            }
+        }
+
+    }
+    
+    s alergen=$o(info(""))
+    while alergen'="" {
+        m alinfo(alergen)=info(alergen,1)
+        s test=$o(info(alergen,1,""))
+        while test'="" {
+            for i = 2:1:info(alergen) {
+                i '$d(info(alergen,i,test)) { k alinfo(alergen,test) }
+            }
+            s test=$o(info(alergen,1,test))
+        }        
+        s alergen=$o(info(alergen))
+    }
+
+    S cont=1
+    while cont {
+        s alergen=$o(alinfo(""))
+        while alergen'="" {
+            s prod=$o(alinfo(alergen,""))
+            s prod=$o(alinfo(alergen,prod))
+            i prod="" {
+                s prod=$o(alinfo(alergen,""))
+                s xal=$o(alinfo(""))
+                while xal'="" {
+                    i alergen'=xal{
+                        k alinfo(xal,prod)
+                    }
+                    s xal=$o(alinfo(xal))
+                }
+            }
+            s alergen=$o(alinfo(alergen))
+        }
+        s alergen=$o(alinfo("")),cont=0
+        while alergen'="",cont=0 {
+            s prod=$o(alinfo(alergen,""))
+            s prod=$o(alinfo(alergen,prod))
+            i prod'="" {
+                s cont=1
+            }
+            s alergen=$o(alinfo(alergen))
+        }
+    }
+    s result=""
+    s alergen=$o(alinfo(""))
+    while alergen'="" {
+        s prod=$o(alinfo(alergen,""))
+        s result=result_prod_","
+        s alergen=$o(alinfo(alergen))
+    }
+    zw testprod,ing,alinfo
+    return $e(result,1,*-1)
+}
+
+
+check(info,prod,nr,alergen)
+{
+    s inAll=1
+    for i = 1:1:info(alergen) {
+        i i'=nr{
+            s contains=0
+            for nr = 1:1:$ll(info(alergen,i)) {
+                i $li(info(alergen,i),nr)=prod {
+                    ;w $li(info(alergen,i),nr),*9,prod,! 
+                    s contains=1 
+                }
+            }
+            i 'contains { s inAll=0 }
+        }
+    }
+    return inAll
 }
