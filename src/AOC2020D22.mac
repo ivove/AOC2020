@@ -1,0 +1,149 @@
+ROUTINE AOC2020D22
+
+Part1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.cards)
+    s p=1
+    for i = 1:1:cards {
+        s line=cards(i)
+        i line="" { s p = 2 }
+        elseif line?.N{
+            s deck(p)=$g(deck(p))+1
+            s deck(p,deck(p))=line
+        }
+    }
+    zw deck
+    s cont=1,w=0
+    while cont {
+        s p1=$o(deck(1,"")),p2=$o(deck(2,""))
+        s c1=deck(1,p1),c2=deck(2,p2)
+        
+        i c1>c2 {
+            s deck(1)=deck(1)+1,deck(1,deck(1))=c1
+            s deck(1)=deck(1)+1,deck(1,deck(1))=c2
+        }
+        else {
+            s deck(2)=deck(2)+1,deck(2,deck(2))=c2
+            s deck(2)=deck(2)+1,deck(2,deck(2))=c1
+
+        }
+        ;w c1,*9,c2
+        k deck(1,p1),deck(2,p2)
+        i $d(deck(1))=1 { s cont=0,w=2 }
+        i $d(deck(2))=1 { s cont=0,w=1 }
+    }
+    w !
+    zw deck
+    s score=0
+    s x=$o(deck(w,""),-1),i=1
+    while x'="" {
+        s score=score+(i*deck(w,x)),i=i+1
+        s x=$o(deck(w,x),-1)
+    }
+    return score
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.cards)
+    s p=1
+    for i = 1:1:cards {
+        s line=cards(i)
+        i line="" { s p = 2 }
+        elseif line?.N{
+            s deck(p)=$g(deck(p))+1
+            s deck(p,deck(p))=line
+        }
+    }
+    zw deck
+    s w=$$play(.deck)
+    w !
+    zw deck
+    s score=0
+    s x=$o(deck(w,""),-1),i=1
+    while x'="" {
+        s score=score+(i*deck(w,x)),i=i+1
+        s x=$o(deck(w,x),-1)
+    }
+    return score
+}
+
+play(deck)
+{
+    ;w "@"
+    s cont=1,w=0
+    while cont {
+        s id=$$deckID(.deck)
+        i '$d(tdeck(id)){
+            s tdeck(id)=""
+            s p1=$o(deck(1,"")),p2=$o(deck(2,""))
+            s c1=deck(1,p1),c2=deck(2,p2)
+            ;w c1,*9,$$count(1,.deck),*9,*9,c2,*9,$$count(2,.deck),!
+            ;r x
+            i c1<$$count(1,.deck),c2<$$count(2,.deck) {
+                ;zw deck
+                m xdeck=deck
+                for i = 1:1:2 {
+                    s a=$o(xdeck(i,""))
+                    s cnt=c1
+                    i i=2 { s cnt=c2 }
+                    k xdeck(i,a)
+                    while a'="" {
+                        i cnt<0 { k xdeck(i,a) }
+                        s cnt=cnt-1
+                        s a=$o(xdeck(i,a))
+                    }
+                }
+                ;w !
+                ;zw xdeck
+                s xw=$$play(.xdeck)
+                i xw=1 {
+                    s deck(1)=deck(1)+1,deck(1,deck(1))=c1
+                    s deck(1)=deck(1)+1,deck(1,deck(1))=c2
+
+                } else {
+                    s deck(2)=deck(2)+1,deck(2,deck(2))=c2
+                    s deck(2)=deck(2)+1,deck(2,deck(2))=c1
+                }
+            } else {
+                i c1>c2 {
+                    s deck(1)=deck(1)+1,deck(1,deck(1))=c1
+                    s deck(1)=deck(1)+1,deck(1,deck(1))=c2
+                }
+                else {
+                    s deck(2)=deck(2)+1,deck(2,deck(2))=c2
+                    s deck(2)=deck(2)+1,deck(2,deck(2))=c1
+
+                }
+            }
+            k deck(1,p1),deck(2,p2)
+            i $d(deck(1))=1 { s cont=0,w=2 }
+            i $d(deck(2))=1 { s cont=0,w=1 }
+        } else { s w=1,cont=0 }
+    }
+    return w
+}
+
+deckID(deck){
+    s id=""
+    for i = 1:1:2 {
+        s a=$o(deck(i,""))
+        while a'=""{
+            s id=id_deck(i,a)_","
+            s a=$o(deck(i,a))
+        }
+        s id=id_"#"
+    }
+    return id
+}
+
+count(p,deck)
+{
+    s count=0
+    s a=$o(deck(p,""))
+    while a'="" {
+        s count=count+1
+        s a=$o(deck(p,a))
+    }
+    return count
+}

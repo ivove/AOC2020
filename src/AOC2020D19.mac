@@ -1,5 +1,221 @@
 ROUTINE AOC2020D19
 
+
+P1(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.mes)
+    k ^||pos,^||rules
+    s type="rules",count=0
+    for i = 1:1:mes
+    {
+        s line=mes(i)
+        ;w line,!
+        i line="" { s type="mes"}
+        elseif type="rules" {
+            s number=$p(line,":")
+            s r=$p(line,":",2)
+            i r[""""{
+                s known(number)=1
+                s known(number,1)=$tr(r,""" ","")
+            } else {
+                s rules(number)=r
+            }
+        }
+        elseif type="mes"{
+            s message(i)=line
+        }
+    }
+
+    s cont=1
+    while cont {
+        s cont=0
+        s x=$o(rules(""))
+        while x'="" {
+            s rule=rules(x)
+            ;w rule,*9,$$allKnown(rule,.known),!
+            i $$allKnown(rule,.known) {
+                for i = 1:1:$l(rule,"|") {
+                    s rulepart=$p(rule,"|",i)
+                    s filled=""
+                    s a=$p(rulepart," ",2),b=$p(rulepart," ",3),c=$p(rulepart," ",4)
+                    for ai = 1:1:known(a) {
+                        i b'=""{
+                            for bi = 1:1:known(b) {
+                                i c'="" {
+                                    for ci = 1:1:known(c) {
+                                        s known(x)=$g(known(x))+1,known(x,known(x))=known(a,ai)_known(b,bi)_known(c,ci)                                        
+                                    }
+                                } else { s known(x)=$g(known(x))+1,known(x,known(x))=known(a,ai)_known(b,bi) }
+                            }
+                        } else { s known(x)=$g(known(x))+1,known(x,known(x))=known(a,ai) }
+                    }
+                }
+                k rules(x)
+            } else {s cont=1 }
+            s x=$o(rules(x))
+        }
+    }
+
+    ;zw known,rules
+
+    s nr=$o(known(0,"")),count=0
+    while nr'="" {
+        s ^||xn(known(0,nr))=""
+        s nr=$o(known(0,nr))
+    }
+    s xx=$o(message("")),count=0
+    while xx'="" {
+        i $d(^||xn(message(xx))) { 
+            s count=count+1 
+        }
+        s xx=$o(message(xx))
+    }
+    return count
+}
+
+Part2(Input)[]PUBLIC
+{
+    d FileReader^AOCutils(Input,.mes)
+    k ^||pos,^||xn
+    s type="rules",count=0
+    for i = 1:1:mes
+    {
+        s line=mes(i)
+        ;w line,!
+        i line="" { s type="mes"}
+        elseif type="rules" {
+            s number=$p(line,":")
+            s r=$p(line,":",2)
+            i r[""""{
+                s known(number)=1
+                s known(number,1)=$tr(r,""" ","")
+            } else {
+                s rules(number)=r
+            }
+        }
+        elseif type="mes"{
+            s message(i)=line
+        }
+    }
+    s known(8,1)=" 8 ",known(8)=1,known(11,1)=" 11 ",known(11)=1
+    k rules(8),rules(11)
+
+    s cont=1
+    while cont {
+        s cont=0
+        s x=$o(rules(""))
+        while x'="" {
+            s rule=rules(x)
+            ;w rule,*9,$$allKnown(rule,.known),!
+            i $$allKnown(rule,.known) {
+                for i = 1:1:$l(rule,"|") {
+                    s rulepart=$p(rule,"|",i)
+                    s filled=""
+                    s a=$p(rulepart," ",2),b=$p(rulepart," ",3),c=$p(rulepart," ",4)
+                    for ai = 1:1:known(a) {
+                        i b'=""{
+                            for bi = 1:1:known(b) {
+                                i c'="" {
+                                    for ci = 1:1:known(c) {
+                                        s known(x)=$g(known(x))+1,known(x,known(x))=known(a,ai)_known(b,bi)_known(c,ci)                                        
+                                    }
+                                } else { s known(x)=$g(known(x))+1,known(x,known(x))=known(a,ai)_known(b,bi) }
+                            }
+                        } else { s known(x)=$g(known(x))+1,known(x,known(x))=known(a,ai) }
+                    }
+                }
+                k rules(x)
+            } else {s cont=1 }
+            s x=$o(rules(x))
+        }
+    }
+
+    ;zw known(0) ;,known(31),rules
+    s count=0
+
+    s nr=$o(known(42,"")),count=0
+    while nr'="" {
+        s ^||xn("42",known(42,nr))=""
+        s nr=$o(known(42,nr))
+    }
+    s nr=$o(known(31,"")),count=0
+    while nr'="" {
+        s ^||xn("31",known(31,nr))=""
+        s l=$l(known(31,nr))
+        s nr=$o(known(31,nr))
+    }
+    ;zw ^||xn
+    ;w l,!
+    s xx=$o(message("")),count=0
+    while xx'="" {
+        s mes=message(xx),m=1,r=8
+        k zz
+        ;w mes,!
+        for i = 1:l:$l(mes) {
+            s zz(i)=$e(mes,i,i+l-1)
+        }
+        ;i mes="aaaabbaaaabbaaa" { zw zz }
+        ;w $$validate(.zz),!
+        i $$validate(.zz) {s count=count+1 }
+        s xx=$o(message(xx))
+    }
+    return count
+}
+
+validate(xx)
+{
+    s ok=1,r8="",r11=""
+    s x=$o(xx(""))
+    while x'="" {
+        s p=xx(x)
+        i $d(^||xn(42,p)) { s r8=r8_"#" }
+        else { s r8=r8_"." }
+        s x=$o(xx(x))
+    }
+    s x=$o(xx(""),-1)
+    while x'="" {
+        s p=xx(x)
+        i $d(^||xn(31,p)) { s r11="#"_r11 }
+        else { s r11="."_r11 }
+        s x=$o(xx(x),-1)
+    }
+    ;w r8,!,r11,!
+    i $e(r8,1)="." { s ok=0 }
+    i $e(r11,*)="." { s ok=0 }
+    i ok {
+        s pre=$e(r8,1)
+        for i = 2:1:$l(r8) {
+            s now=$e(r8,i)
+            i pre=".",now="#" {s ok=0 }
+            s pre=now
+        }
+    }
+    i ok {
+        s pre=$e(r11,*)
+        zw xx
+        w r11,!
+        for i = $l(r11)-1:-1:1 {
+            s now=$e(r11,i)
+            w pre,*9,now,!
+            i pre=".",now="#" {s ok=0 }
+            s pre=now
+        }
+        w ok,!
+    }
+    i ok{
+        s c1=0,c2=0
+        for i = 1:1:$l(r8) {
+            i $e(r8,i)="#" {s c1=c1+1}
+        }
+        for i = 1:1:$l(r11) {
+            i $e(r11,i)="#" {s c2=c2+1}
+        }
+        i c2>=c1 {s ok=0}
+    }
+    return ok
+}
+
+
 Part1(Input)[]PUBLIC
 {
     d FileReader^AOCutils(Input,.mes)
