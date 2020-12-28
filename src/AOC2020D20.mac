@@ -120,33 +120,8 @@ Part2(Input)[]PUBLIC
     zw temp
     w corner,!
     s next=corner,line=1,col=1,fromnr=4
-    /*while next {
-        s nr=fromnr
-        ;if fromnr=3 {s nr=4 }
-        ;else {s nr=3 }
-        s xx=$g(temp(next,nr))
-        i xx'="" {
-            i $li(xx,3)=0 {
-                f i=1:1:10{
-                    for j = 1:1:10 {
-                        w next,*9,j+(10*(col-1)),!
-                        s img(i+(10*(line-1)),j+(10*(col-1)))=$e(tile(next,i),j)
-                    }
-                }
-            } else {
-                f i=1:1:10{
-                    for j = 1:1:10 {
-                        w next,*9,j+(10*(col-1)),!
-                        s img(i+(10*(line-1)),j+(10*(col-1)))=$e(tile(next,i),11-j)
-                    }
-                }
-            }
-            s done(next,nr)=""
-            s fromnr=$li(xx,2)
-            s next=$li(xx,1),col=col+1
-            i '$d(done(next)) { s next="" }
-        } else { s next="" }
-    }*/
+    
+    
     m xxtemp=temp
     s nr=4,cornernr=4
     for line=1:1:side {
@@ -193,6 +168,20 @@ Part2(Input)[]PUBLIC
     }
     k temp
     m temp=xxtemp
+
+    s x=$o(img(""))
+    while x'="" {
+        s y=$o(img(x,""))
+        while y'="" {
+            i y<side {
+                s right=$o(img(x,y))
+                
+            }
+
+            s y=$o(img(x,y))
+        }
+        s x=$o(img(x))
+    }
 
     f x=1:1:side{
         f l=1:1:10{

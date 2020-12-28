@@ -1,0 +1,169 @@
+ROUTINE AOC2020D24
+
+Part1(Input)[]PUBLIC
+{
+    
+    d FileReader^AOCutils(Input,.map)
+    for i = 1:1:map {
+        s line=map(i),x=0,y=0
+        ;seswneswswsenwwnwse
+        d CalcDiff(line,.x,.y)
+        i $g(tiles(x,y)) { s tiles(x,y)=0}
+        else {s tiles(x,y)=1}
+    }
+    s count=0
+    zw tiles
+    s x=$o(tiles(""))
+    while x'=""{
+        s y=$o(tiles(x,""))
+        while y'="" {
+            i tiles(x,y)=1 { s count=count+1}
+            s y=$o(tiles(x,y))
+        }
+        s x=$o(tiles(x))
+    }
+    return count
+}
+
+CalcDiff(line,x,y) [] PUBLIC
+{
+    s dirs=",e,se,sw,w,nw,ne,"
+    for j = 1:1:$l(line) {
+            s dir=$e(line,j,j+1),dy=0,dx=0
+            i dirs[(","_dir_",") { s j=j+1 }
+            else { s dir=$e(line,j)}
+            ;w dir,!
+            i dir="e" { s dx=dx+2 }
+            elseif dir="w" { s dx=dx-2}
+            elseif dir="ne"{ s dy=dy+1,dx=dx+1 }
+            elseif dir="sw"{ s dy=dy-1,dx=dx-1 }
+            elseif dir="se" { s dy=dy-1,dx=dx+1 }
+            elseif dir="nw" {s dx=dx-1,dy=dy+1}
+            s x=x+dx,y=y+dy
+        }
+}
+
+Part2(Input,days)[]PUBLIC
+{
+    
+    d FileReader^AOCutils(Input,.map)
+    for i = 1:1:map {
+        s line=map(i),x=0,y=0,z=0
+        d CalcDiff2(line,.x,.y,.z)
+        i $g(tiles(x,y,z)) { s tiles(x,y,z)=0}
+        else {s tiles(x,y,z)=1}
+    }
+    s count=0
+    
+    s x=$o(tiles("")),miny=0,maxy=0,minz=0,maxz=0
+    while x'=""{
+        s y=$o(tiles(x,""))
+        while y'="" {
+            i y<miny { s miny=y }
+            i y>maxy { s maxy=y }
+            s z=$o(tiles(x,y,""))
+            while z'="" {
+                i z<minz { s minz=z }
+                i z>maxz { s maxz=z }
+                s z=$o(list(x,y,z))
+            }
+            s y=$o(tiles(x,y))
+        }
+        s x=$o(tiles(x))
+    }
+
+    zw tiles
+    w !
+
+    for i = 1:1:days {
+        k new 
+        m new=tiles
+        s minx=$o(tiles("")),maxx=$o(tiles(""),-1)
+        for x=minx-1 :1:maxx+1 {
+            for y = miny-1:1:maxy+1 {
+                for z = minz-1:1:maxz+1 {
+                    s b=0,w=0
+                    f tt="1,-1,0","0,-1,1","-1,0,1","-1,1,0","0,1,-1","1,0,-1"{
+                        s dx=$p(tt,",",1),dy=$p(tt,",",2),dz=$p(tt,",",3)
+                        i $g(tiles(x+dx,y+dy,z+dz))=1 { s b=b+1 }
+                        else {s w=w+1} 
+                    }
+                    i $g(tiles(x,y,z))=1{
+                        i (b=0){
+                            s new(x,y,z)=0
+                        } elseif (b>2) { s new(x,y,z)=0 } 
+                        else { s new(x,y,z)=1}
+                    } else {
+                        i b=2 { s new(x,y,z)=1}
+                        else { s new(x,y,z)=0}
+                    }
+                    ;i i=days { w x,*9,y,*9,z,*9,b,*9,w,*9,$g(tiles(x,y,z),0),*9,new(x,y,z),! }
+                }                
+            }
+        }
+        ;zw tiles
+        ;w !
+        ;w !
+        ;zw new
+        k tiles
+        m tiles=new
+        i i=days { zw tiles  w !}
+    }
+    ;d Vis(.tiles)
+    s x=$o(tiles(""))
+    while x'=""{
+        s y=$o(tiles(x,""))
+        while y'="" {
+            s z=$o(tiles(x,y,""))
+            while z'="" {
+                i tiles(x,y,z)=1 { s count=count+1}
+                s z=$o(tiles(x,y,z))
+            }
+            s y=$o(tiles(x,y))
+        }
+        s x=$o(tiles(x))
+    }
+    return count
+}
+
+Vis(tiles,plus){
+     s x=$o(tiles("")),miny=0,maxy=0
+    while x'=""{
+        s y=$o(tiles(x,""))
+        while y'="" {
+            i y<miny { s miny=y }
+            i y>maxy { s maxy=y }
+            s y=$o(tiles(x,y))
+        }
+        s x=$o(tiles(x))
+    }
+
+    s minx=$o(tiles("")),maxx=$o(tiles(""),-1)
+    i plus {s miny=miny-1,maxy=maxy+1,minx=minx-1,maxx=maxx+1}
+    for x=minx:1:maxx{
+        
+        for y=miny:1:maxy {
+            i $g(tiles(x,y))=1 { w "#"}
+            else { w "." }
+        }
+        w !
+    }
+}
+
+CalcDiff2(line,x,y,z) [] PUBLIC
+{
+    s dirs=",e,se,sw,w,nw,ne,"
+    for j = 1:1:$l(line) {
+            s dir=$e(line,j,j+1),dy=0,dx=0,dz=0
+            i dirs[(","_dir_",") { s j=j+1 }
+            else { s dir=$e(line,j)}
+            ;w dir,!
+            i dir="e" { s dx=dx+1,dy=dy-1 }
+            elseif dir="w" { s dx=dx-1,dy=dy+1}
+            elseif dir="ne"{ s dx=dx+1,dz=dz-1 }
+            elseif dir="sw"{ s dx=dx-1,dz=dz+1 }
+            elseif dir="se" { s dz=dz+1,dy=dy-1 }
+            elseif dir="nw" {s dy=dy+1,dz=dz-1}
+            s x=x+dx,y=y+dy,z=z+dz
+        }
+}

@@ -1,0 +1,39 @@
+ROUTINE AOC2020D25
+
+Part1(key1,key2) [] PUBLIC
+{
+    s l1=$$getLoopsize(key1,7)
+    s l2=$$getLoopsize(key2,7)
+    s x1=$$getKey(key1,l2)
+    s x2=$$getKey(key2,l1)
+
+    w "l1: ",l1,!,"l2: ",l2,!
+    w "x1: ",x1,!,"x2: ",x2,!
+
+    return x2
+}
+
+getLoopsize(key,subjectNumber) [] PUBLIC
+{
+    s val=1
+    s ls=0
+    while val'=key {
+        s ls=ls+1
+        s val=val*subjectNumber
+        s val=val#20201227
+        ;w key,*9,val,!
+    }
+    ;w key,*9,val,!
+    i val'=key { s ls=0 }
+    return ls
+}
+
+getKey(subjectNumber,loopsize) [] PUBLIC
+{
+    s key="",val=1
+    for i = 1:1:loopsize {
+        s val=val*subjectNumber
+        s val=val#20201227
+    }
+    return val
+}
